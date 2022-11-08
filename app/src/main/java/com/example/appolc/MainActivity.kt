@@ -1,6 +1,7 @@
 package com.example.appolc
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.graphics.Typeface
 import android.os.Bundle
 import android.util.Log
@@ -27,6 +28,8 @@ class MainActivity : AppCompatActivity() {
     var matriz = arrayOf(
         arrayOf("Codigo", "Serie", "Lote", "Cantidad")
     )
+
+    var lines = arrayOf(arrayOf(""))
 
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -86,6 +89,9 @@ class MainActivity : AppCompatActivity() {
         binding.btnAgregar.setOnClickListener {
             enviarObj()
         }
+        binding.btnGuardar.setOnClickListener {
+            enviarLines()
+        }
     }
 
     private fun initScanner() {
@@ -135,6 +141,9 @@ class MainActivity : AppCompatActivity() {
         txt2.text=binding.txtSerie.text.toString()
         txt3.text=binding.txtLote.text.toString()
         txt4.text=binding.txtCantidad.text.toString()
+        var arrayline = arrayOf(binding.spinnerAlmacen.getSelectedItem().toString(), txt1.text.toString(), txt2.text.toString(), txt3.text.toString(), txt4.text.toString())
+        //lines.drop(0)
+        lines = lines.plus(arrayline)
         binding.tableList.addView(registro)
 
         binding.txtCodigo.setText("")
@@ -145,5 +154,12 @@ class MainActivity : AppCompatActivity() {
         //val alm = binding.spinnerAlmacen.getSelectedItem()
         //Log.d("MainActivity", "Alm")
         //Toast.makeText(this@MainActivity, "Almacen:" + alm, Toast.LENGTH_LONG).show()
+    }
+
+    private fun enviarLines()
+    {
+        var intent: Intent = Intent(this, proceso::class.java)
+        intent.putExtra("Lines", lines)
+        startActivity(intent)
     }
 }

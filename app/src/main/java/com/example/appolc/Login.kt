@@ -4,6 +4,7 @@ import android.R
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.example.appolc.databinding.ActivityLoginBinding
@@ -29,15 +30,16 @@ class Login : AppCompatActivity() {
     }
 
     private fun login() {
-        if (binding.txtUsuario.toString() != "" && binding.txtPassword.toString() != "") {
-            val intent: Intent = Intent(this, MainActivity:: class.java)
-            getApiService()
-            //startActivity(intent)
+        val usu = binding.txtUsuario.text.toString()
+        val pass = binding.txtPassword.text.toString()
+        if (usu != "" && pass != "") {
+            getApiService(usu, pass)
+        } else {
+            Toast.makeText(this@Login, "Ingrese un usuario y contraseña", Toast.LENGTH_SHORT).show()
         }
-        //Toast.makeText(this, binding.txtUsuario.toString(), Toast.LENGTH_SHORT).show()
     }
 
-    private fun getApiService() {
+    private fun getApiService(usu: String, pass: String) {
         val retrofit = Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create(
@@ -45,14 +47,15 @@ class Login : AppCompatActivity() {
             ))
             .build()
         val apiService: APIService = retrofit.create(APIService::class.java)
-        val call: Call<UserResponse> = apiService.postUser()
+        val call: Call<UserResponse> = apiService.postUser(usu, pass)
 
         call.enqueue(object : Callback<UserResponse> {
             override fun onResponse(call: Call<UserResponse>, response: Response<UserResponse>) {
                 if (response.isSuccessful) {
-                    Log.d("Resp: ", response.body().toString())
+                    val intent: Intent = Intent(this@Login, MainActivity::class.java)
+                    startActivity(intent)
                 } else {
-                    Log.d("Error", "Something happened");
+                    Toast.makeText(this@Login, "Error de autenticación", Toast.LENGTH_SHORT).show()
                     return;
                 }
             }
